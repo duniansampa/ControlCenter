@@ -1,0 +1,7 @@
+::deep .rz-menu {
+    background-color: transparent;
+}
+
+::deep .rz-profile-menu .rz-navigation-item-wrapper div.rz-navigation-item-link{
+    height: 24px;
+}

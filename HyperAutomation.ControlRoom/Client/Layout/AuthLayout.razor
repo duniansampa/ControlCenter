@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+
+<CascadingValue Value="this">
+    <div class="adx-page">
+        <div class="adx-main-panel">
+            <BSNavbar IsExpand="true" HideLight="true">
+                <div class="container-fluid">
+                    <div class="adx-navbar-toggle-area">
+                        <span class="adx-navbar-text">Login</span>
+                    </div>
+                    <AuthMenuBar />
+                </div>
+            </BSNavbar>
+
+            <div class="adx-content">
+                @Body
+            </div>
+            <AuthFooter></AuthFooter>
+        </div>
+    </div>
+</CascadingValue>
+
+@*<CascadingValue Value="this">
+    <div>
+        <AuthNavbar />
+        <div class="adx-wrapper adx-wrapper-full-page">
+            <div class="adx-full-page">
+                @Body
+                <Footer IsFluid="true" />
+            </div>
+        </div>
+    </div>
+</CascadingValue>*@
+
+@code{
+}

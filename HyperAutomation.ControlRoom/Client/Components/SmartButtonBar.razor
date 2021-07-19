@@ -1,0 +1,50 @@
+﻿ @using System.Timers
+@using Radzen
+@using Radzen.Blazor
+
+@if (state != ButtonBarState.Close)
+{
+        <BSButtonGroup Class="position-absolute pl-1 pr-1" style="background-color: lightblue; right: 30px" @onmouseenter="() => state = ButtonBarState.OpenTwo" @onmouseleave="() => state = ButtonBarState.Close"  @onclick:stopPropagation>
+        @ChildContent
+        </BSButtonGroup>
+}
+<RadzenButton ButtonStyle="ButtonStyle.Light" Icon="more_vert" Size="ButtonSize.Small" @onmouseenter="() => state = ButtonBarState.Open" @onmouseleave="() => OnmouseLeave()" @onclick:stopPropagation></RadzenButton>
+
+@code {
+
+    [Parameter]
+    public bool IsOnLeft { get; set; } = true;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    ButtonBarState state = ButtonBarState.Close;
+
+    async Task OnmouseLeave()
+    {
+        state = ButtonBarState.ToClose;
+        var timer = new Timer(500);
+        timer.Elapsed += (sender, e) =>
+        {
+            timer.Stop();
+            if (state == ButtonBarState.ToClose)
+            {
+                state = ButtonBarState.Close;
+
+                InvokeAsync(() =>
+                {
+                    StateHasChanged();
+                });
+            }
+        };
+        timer.Start();
+    }
+
+    enum ButtonBarState
+    {
+        Close,
+        Open,
+        ToClose,
+        OpenTwo
+    }
+}

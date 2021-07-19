@@ -1,0 +1,164 @@
+﻿@page "/login"
+@inject HttpClient  http
+@inject NavigationManager navigation
+@inject TokenAuthenticationProvider authStateProvider
+
+
+<div class="h-100 d-flex justify-content-center align-items-center">
+    <BSContainer>
+        <BSRow Class="h-100">
+            <BSCol class="ml-auto mr-auto" LG="5" MD="7">
+                <BSForm Class="adx-form" Model="formsModelFocus" OnValidSubmit="@(() => Console.WriteLine())">
+                    <BSCard Class="adx-card-login adx-card-white">
+                        <BSCard CardType="BlazorStrap.CardType.Header">
+                            <img  alt="..." src="images/card-primary.png" />
+                            <BSCard CardType="BlazorStrap.CardType.Title">
+                                Login
+                            </BSCard>
+                        </BSCard>
+                        <BSCard CardType="BlazorStrap.CardType.Body">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="tim-icons icon-email-85" />
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" placeholder="Email" aria-label="Username" aria-describedby="basic-addon1">
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="tim-icons icon-lock-circle" />
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1">
+                            </div>
+                        </BSCard>
+                        <BSCard CardType="BlazorStrap.CardType.Footer">
+                            <BSButton IsBlock="true" ButtonType="BlazorStrap.ButtonType.Button" Class="mb-4" Color="Color.Primary" Size="Size.Large">
+                                Entrar
+                            </BSButton>
+                            <div class="float-left">
+                                <h6>
+                                    <a class="link footer-link">
+                                        Create Account
+                                    </a>
+                                </h6>
+                            </div>
+                            <div class="float-right">
+                                <h6>
+                                    <a class="link footer-link">
+                                        Need Help?
+                                    </a>
+                                </h6>
+                            </div>
+                        </BSCard>
+                    </BSCard>
+                </BSForm>
+            </BSCol>
+        </BSRow>
+    </BSContainer>
+</div>
+
+    @*
+        <div class="adx-login col-6">
+            <BSAlert Exibir="loginFalhou">
+                <h5>@Mensagem</h5>
+            </BSAlert>
+
+            <div class="card-body">
+                <h5 class="card-title">Login</h5>
+                <EditForm Model="userprofile" OnValidSubmit="FazerLogin">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <InputText class="form-control"
+                                   @bind-Value="userprofile.Email" />
+                        <ValidationMessage For="@(()=> userprofile.Email)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <InputText type="password" class="form-control"
+                                   @bind-Value="userprofile.Password" />
+                        <ValidationMessage For="@(()=> userprofile.Password)" />
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Login</button>
+                </EditForm>
+            </div>
+        </div>
+    *@
+
+    @code {
+        string userName = "admin";
+        string password = "admin";
+
+        void OnLogin(LoginArgs args, string name)
+        {
+            //console.Log($"{name} -> Username: {args.Username} and password: {args.Password}");
+        }
+
+        void OnRegister(string name)
+        {
+            //console.Log($"{name} -> Register");
+        }
+
+        void OnResetPassword(string value, string name)
+        {
+            //console.Log($"{name} -> ResetPassword for user: {value}");
+        }
+
+        private FormsModel formsModelFocus = new FormsModel();
+        private BSInput<string> focusInputElement;
+
+        public class FormsModel
+        {
+            public string Valid { get; set; }
+            public string InValid { get; set; }
+            public string Blank { get; set; }
+            public string Email { get; set; } = "email@example.com";
+        }
+    }
+
+    @code {
+        private UserProfile userprofile = new UserProfile();
+
+        bool loginFalhou = false;
+
+        [Parameter]
+        public string Mensagem { get; set; }
+
+        async Task FazerLogin()
+        {
+            try
+            {
+                //var result = await http.PostJsonAsync<UserToken>("api/account/login", userinfo);
+
+                var loginAsJson = JsonSerializer.Serialize(userprofile);
+
+                var httpResponse = await http.PostAsync("api/account/login",
+                         new StringContent(loginAsJson, Encoding.UTF8, "application/json"));
+
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    var responseAsString = await httpResponse.Content.ReadAsStringAsync();
+
+                    var loginResult = JsonSerializer.Deserialize<UserToken>(responseAsString,
+                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    await authStateProvider.Login(loginResult.Token);
+                    navigation.NavigateTo("/");
+                }
+                else
+                {
+                    loginFalhou = true;
+                    Mensagem = $"Não foi possível realizar o Login do usuário.(Erro: {httpResponse.StatusCode})";
+                }
+            }
+            catch (Exception)
+            {
+                loginFalhou = true;
+                Mensagem = "Não foi possível realizar o Login do Usuário...";
+            }
+        }
+    }

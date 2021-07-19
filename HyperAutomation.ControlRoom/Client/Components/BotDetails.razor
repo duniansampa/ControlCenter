@@ -1,0 +1,122 @@
+﻿@using Radzen
+@using Radzen.Blazor
+@using BlazorStrap
+
+@inject DialogService dialogService
+@inject HttpClient http
+
+<div>
+    <BSContainer Class="mx-0">
+        <BSRow>
+            <BSCol XS="5" Class="pl-0">
+                <BSFormGroup Class="pb-0">
+                    <BSLabel For="BotName">Nome</BSLabel>
+                    <RadzenTextBox @bind-Value="bot.Name" MaxLength="60" Name="BotName" Placeholder="Digite o nome do robô..." class="d-block w-100" />
+                    <RadzenRequiredValidator Text="O nome é obrigatório" Component="BotName" Popup="true" />
+                </BSFormGroup>
+            </BSCol>
+            <BSCol XS="7" Class="pr-0">
+                <BSFormGroup Class="pb-0">
+                    <BSLabel For="BotName">Pasta</BSLabel>
+                    <RadzenDropDownDataGrid FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data="@folders" TextProperty="Name" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnFolderChange(args)) @bind-Value="currentFolder" Placeholder="Selecione uma pasta..." class="mb-1 py-0 w-100">
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="Name" Title="Nome da pasta" Width="200px" />
+                            <RadzenDropDownDataGridColumn Property="Bots" Title="Qtd de Robôs" Width="100px">
+                                <Template Context="data">
+                                    @((data as BotFolder).Bots?.Count ?? 0)
+                                </Template>
+                            </RadzenDropDownDataGridColumn>
+                        </Columns>
+                    </RadzenDropDownDataGrid>
+                </BSFormGroup>
+            </BSCol>
+        </BSRow>
+        <BSRow>
+            <RadzenHtmlEditor @bind-Value=@bot.Description Style="height: 200px; width: 100%" UploadUrl="upload/image" Change=@OnChange Paste=@OnPaste Execute=@OnExecute>
+                <RadzenHtmlEditorUndo />
+                <RadzenHtmlEditorRedo />
+                <RadzenHtmlEditorSeparator />
+                <RadzenHtmlEditorBold />
+                <RadzenHtmlEditorItalic />
+                <RadzenHtmlEditorUnderline />
+                <RadzenHtmlEditorStrikeThrough />
+                <RadzenHtmlEditorSeparator />
+                <RadzenHtmlEditorColor />
+                <RadzenHtmlEditorBackground />
+                <RadzenHtmlEditorRemoveFormat />
+            </RadzenHtmlEditor>
+        </BSRow>
+        <BSRow Class="position-absolute" style="bottom: 10px">
+            <BSCol Class="px-0">
+                <RadzenButton Click="@((args) => CreateOrUpdate())" Icon="done" Text="Criar" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" Style="width:auto" class="px-2" />
+                <RadzenButton Click="@((args) => dialogService.Close(false))" Icon="cancel" Text="Cancelar" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Style="width:auto" class="px-2" />
+            </BSCol>
+        </BSRow>
+    </BSContainer>
+</div>
+
+@code {
+
+    [Parameter]
+    public Guid CurrentFolderId { get; set; }
+
+    List<BotFolder> folders = new List<BotFolder>();
+
+    Bot bot = new Bot();
+    string htlmEditorValue;
+    BotFolder currentFolder;
+
+    static DialogOptions dialogOptions = new DialogOptions() { Width = "800px", Height = "420px", ShowClose = true };
+
+    public static DialogOptions GetDialogOptions() => dialogOptions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllFolders();
+    }
+
+    async Task GetAllFolders()
+    {
+        folders = await http.GetFromJsonAsync<List<BotFolder>>("api/BotFolders");
+        if (CurrentFolderId != Guid.Empty)
+        {
+            currentFolder = folders.FirstOrDefault(c => c.BotFolderId == CurrentFolderId);
+            CurrentFolderId = Guid.Empty;
+        }
+    }
+
+    void OnFolderChange(object value)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+
+        Console.WriteLine($"DropDown value changed to {str}");
+    }
+
+    void OnPaste(HtmlEditorPasteEventArgs args)
+    {
+        Console.WriteLine($"Paste: {args.Html}");
+    }
+
+    void OnChange(string html)
+    {
+        Console.WriteLine($"Change: {html}");
+    }
+
+    void OnExecute(HtmlEditorExecuteEventArgs args)
+    {
+        Console.WriteLine($"Execute: {args.CommandName}");
+    }
+
+    void CreateOrUpdate()
+    {
+        var result = new Dictionary<string, object>
+        {
+            { "currentFolderId", currentFolder.BotFolderId},
+            { "success", true }
+        };
+        http.PostAsJsonAsync("api/Bots", bot);
+        dialogService.Close(result);
+    }
+}

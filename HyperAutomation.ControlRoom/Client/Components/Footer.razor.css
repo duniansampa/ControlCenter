@@ -1,0 +1,50 @@
+
+.adx-footer{
+    padding: 24px 20px 30px 15px;
+    color: black;
+}
+
+.adx-sidebar-mini .adx-footer {
+    padding-left: 110px;
+}
+
+::deep [class*="container-"] {
+    padding: 0;
+}
+
+::deep .nav {
+    display: inline-block;
+    float: left;
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+::deep .adx-copyright {
+    float: right;
+    margin-top: 5px;
+    font-size: 0.75rem;
+    line-height: 1.8;
+}
+
+::deep .nav-item {
+    display: inline-block;
+}
+
+::deep .nav-item:first-child a {
+    padding-left: 0;
+}
+
+::deep .nav-link {
+    display: block;
+    color: #ffffff;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+::deep a {
+    background-color: transparent;
+    font-weight: 300;
+}

@@ -1,0 +1,235 @@
+﻿@page "/bots"
+@page "/bots/mybots"
+
+@using Radzen
+@using Radzen.Blazor
+
+@inject HttpClient http
+@inject DialogService DialogService
+
+<div>
+    <BSContainer Class="mx-0">
+        <BSRow>
+            <BSCol XS="8" Class="px-0">
+                <div class="input-group">
+                    <RadzenDropDownDataGrid FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data="@folders" TextProperty="Name" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnFolderChange(args)) @bind-Value="currentFolder"
+                                            Style="width:400px; height:28px;" Placeholder="Selecione uma pasta..." class="mb-1 py-0">
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="Name" Title="Nome da pasta" Width="200px" />
+                            <RadzenDropDownDataGridColumn Property="Bots" Title="Qtd de Robôs" Width="100px">
+                                <Template Context="data">
+                                    @((data as BotFolder).Bots?.Count ?? 0)
+                                </Template>
+                            </RadzenDropDownDataGridColumn>
+                        </Columns>
+                    </RadzenDropDownDataGrid>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="folder_open" Size="ButtonSize.Small" Disabled="@dialogOpened" Click="@ShowFolderDialog"></RadzenButton>
+                </div>
+            </BSCol>
+            <BSCol XS="4" Class="px-0">
+                <BSButtonGroup Class="mb-1 float-right px-0">
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="add" Size="ButtonSize.Small" Click="@AddNewBot" class="ml-2"></RadzenButton>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="file_upload" Size="ButtonSize.Small" class="ml-2"></RadzenButton>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="delete_forever" Size="ButtonSize.Small" class="ml-2"></RadzenButton>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="refresh" Size="ButtonSize.Small" class="ml-2"></RadzenButton>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="table_view" Size="ButtonSize.Small" class="ml-2"></RadzenButton>
+                </BSButtonGroup>
+            </BSCol>
+        </BSRow>
+        <BSRow>
+            <RadzenGrid @ref="botsGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="true" PageSize="10"
+                        AllowSorting="true" Data="@bots" TItem="Bot" ColumnWidth="120px"
+                        SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@multipleValues>
+                <Columns>
+                    <RadzenGridColumn TItem="Bot" Width="40px" Sortable="false" Filterable="false">
+                        <HeaderTemplate>
+                            <RadzenCheckBox TriState="false" TValue="bool" Value="@(bots.Any(i => multipleValues != null && (multipleValues as IEnumerable<Bot>).Contains(i)))"
+                                            Change="@(args => multipleValues = args ? bots : null)" />
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(multipleValues != null && (multipleValues as IEnumerable<Bot>).Contains(data))" />
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Bot" Property="Type" Title="Tipo">
+                        <Template>
+                            <RadzenIcon Icon="adb" />
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Bot" Property="Name" Title="Nome" Width="auto">
+                        <FooterTemplate>
+                            <span>Robôs e Formulários (@bots.Count)</span>
+                        </FooterTemplate>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Bot" Property="Status" Title="Status" />
+                    <RadzenGridColumn TItem="Bot" Property="Size" Title="Tamanho">
+                        <Template>
+                            @($"{context.Size}KB")
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Bot" Property="ModifiedOn" Title="Última Modificação" Width="200px">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.ModifiedOn)
+                        </Template>
+                        <FooterTemplate>
+                            <span>Selecionados (@amountSelected)</span>
+                        </FooterTemplate>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Bot" Property="ModifiedBy" Title="Modificado Por" Width="auto">
+                        <Template Context="data">
+                            @data?.ModifiedBy?.UserName
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Bot" Context="data" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="40px">
+                        <Template Context="data">
+                            <SmartButtonBar>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="add" Size="ButtonSize.Small"></RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="file_upload" Size="ButtonSize.Small" class="ml-1"></RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="delete_forever" Size="ButtonSize.Small" class="ml-1"></RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="refresh" Size="ButtonSize.Small" class="ml-1"></RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="table_view" Size="ButtonSize.Small" class="ml-1"></RadzenButton>
+                            </SmartButtonBar>
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </BSRow>
+    </BSContainer>
+</div>
+
+@code {
+
+    List<Bot> bots = new List<Bot>();
+
+    List<BotFolder> folders = new List<BotFolder>();
+
+
+    RadzenGrid<Bot> botsGrid;
+
+    BotFolder currentFolder;
+    object multipleValues;
+    int amountSelected = 0;
+    bool dialogOpened;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
+        await GetAllFolders();
+        //await GetAllBots();
+    }
+
+    async Task GetAllBots()
+    {
+        bots = await http.GetFromJsonAsync<List<Bot>>("api/Bots");
+    }
+
+    async Task GetAllFolders()
+    {
+        folders = await http.GetFromJsonAsync<List<BotFolder>>("api/BotFolders");
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+        Console.WriteLine("Dialog opened");
+    }
+
+    void Close(dynamic result)
+    {
+        if (result is Dictionary<string, object>)
+        {
+            var dic = result as Dictionary<string, object>;
+            string key = "currentFolderId";
+            if (dic.ContainsKey(key))
+            {
+                Guid id = (Guid)dic[key];
+                currentFolder = folders.FirstOrDefault(f => f.BotFolderId == id);
+                InvokeAsync(() => StateHasChanged());
+            }
+        }
+    }
+
+    void OnFolderChange(object value)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+
+        Console.WriteLine($"==> DropDown value changed to {str}");
+    }
+
+    void ShowFolderDialog()
+    {
+        dialogOpened = true;
+        DialogService.OpenAsync<FolderDialog>("Gerenciar Pastas",
+                options: FolderDialog.GetDialogOptions()).ConfigureAwait(true);
+
+        dialogOpened = false;
+    }
+
+    void EditBot(Bot bot)
+    {
+        botsGrid.EditRow(bot);
+    }
+
+    void OnUpdateBot(Bot bot)
+    {
+        http.PutAsJsonAsync($"api/Bots/{bot.BotId}", bot);
+    }
+
+    void CreateFolder()
+    {
+        botsGrid.InsertRow(new Bot());
+    }
+
+    void OnCreateFolder(Bot bot)
+    {
+        http.PostAsJsonAsync("api/Bots", bot);
+    }
+
+    void ConfirmFolderCreation(Bot bot)
+    {
+        botsGrid.UpdateRow(bot);
+    }
+
+    void CancelEdit(Bot bot)
+    {
+        botsGrid.CancelEditRow(bot);
+    }
+
+    void DeleteBot(Bot bot)
+    {
+        if (bots.Contains(bot))
+        {
+            bots.Remove(bot);
+            http.DeleteAsync($"api/Bots/{bot.BotId}");
+            botsGrid.Reload();
+        }
+        else
+        {
+            botsGrid.CancelEditRow(bot);
+        }
+    }
+
+    void DeleteManyBots()
+    {
+
+    }
+
+    void Refresh()
+    {
+        GetAllFolders().ConfigureAwait(true);
+    }
+
+    void CustomizeCollumns()
+    {
+
+    }
+
+    void AddNewBot()
+    {
+        DialogService.OpenAsync<BotDetails>("Criar Robô",
+        parameters: new Dictionary<string, object> { { "CurrentFolderId", currentFolder?.BotFolderId ?? Guid.Empty } },
+        options: BotDetails.GetDialogOptions()).ConfigureAwait(true);
+    }
+}

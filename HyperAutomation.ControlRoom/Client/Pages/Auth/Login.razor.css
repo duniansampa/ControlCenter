@@ -1,0 +1,86 @@
+﻿::deep .adx-form {
+  width: 100%;
+  height: 100%;
+}
+
+::deep .adx-card-login {
+    border-radius: 0.4285rem;
+    padding-bottom: 0.7rem;
+    border: 0px;
+}
+
+::deep .adx-card-white {
+    background: #ffffff;
+}
+
+.input-group, .form-group {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.adx-card-login .input-group:last-child {
+    margin-bottom: 40px;
+}
+
+::deep .card .card-body {
+    padding: 15px;
+}
+
+::deep .card .card-header:not([data-background-color]) {
+    background-color: transparent;
+}
+
+::deep .adx-card-login .card-header {
+    padding: 0 0 100px;
+    overflow: hidden;
+    border: 0;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+::deep .card .card-footer {
+    background-color: transparent;
+    border: 0;
+    padding: 15px;
+}
+
+::deep .card .card-footer h6 {
+    margin-bottom: 0;
+    padding: 7px 0;
+}
+
+    ::deep .card .card-footer .link {
+        font-size: 10px;
+        text-decoration: none;
+    }
+
+::deep .adx-card-login .card-header img {
+    position: absolute;
+    width: 70%;
+}
+
+::deep .adx-card-login .card-header .card-title {
+    position: relative;
+    color: #ffffff;
+    font-size: 5em;
+    font-weight: 900;
+    color: #222a42;
+    /*text-transform: lowercase;*/
+    margin-left: -5px;
+    line-height: 1.05;
+    z-index: 1;
+}
+
+h6, .h6 {
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+a {
+    color: #ba54f5;
+    font-weight: 300;
+}
+
+img {
+    max-width: 100%;
+    border-radius: 0.2857rem;
+}

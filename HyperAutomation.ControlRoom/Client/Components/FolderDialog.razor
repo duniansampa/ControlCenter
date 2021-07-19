@@ -1,0 +1,177 @@
+﻿@using Radzen
+@using Radzen.Blazor
+@using BlazorStrap
+
+@inject DialogService dialogService
+@inject HttpClient http
+
+<div>
+    <BSContainer Class="mx-0">
+        <BSRow>
+            <BSCol Class="px-0">
+                <BSButtonGroup Class="mb-1 float-right px-0">
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="add" Size="ButtonSize.Small" Click="@(args => CreateFolder())" class="ml-2"></RadzenButton>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="delete_forever" Size="ButtonSize.Small" Click="@(args => DeleteManyFolders())" class="ml-2"></RadzenButton>
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="refresh" Size="ButtonSize.Small" Click="@(args => Refresh())" class="ml-2"></RadzenButton>
+                </BSButtonGroup>
+            </BSCol>
+        </BSRow> 
+        <BSRow>
+            <RadzenGrid @ref="foldersGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                        FilterMode="FilterMode.Simple" AllowPaging="true" PageSize="5"
+                        AllowSorting="true" Data="@folders" TItem="BotFolder" ColumnWidth="120px"
+                        SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@multipleValues
+                        EditMode="DataGridEditMode.Single" RowUpdate="@OnUpdateFolder" RowCreate="@OnCreateFolder">
+                <Columns>
+                    <RadzenGridColumn TItem="BotFolder" Width="40px" Sortable="false" Filterable="false">
+                        <HeaderTemplate>
+                            <RadzenCheckBox TriState="false" TValue="bool" Value="@(folders.Any(i => multipleValues != null && (multipleValues as IEnumerable<BotFolder>).Contains(i)))"
+                                            Change="@(args => multipleValues = args ? folders : null)" />
+                        </HeaderTemplate>
+                        <Template Context="data">
+                            <RadzenCheckBox TriState="false" Value="@(multipleValues != null && (multipleValues as IEnumerable<BotFolder>).Contains(data))" />
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="BotFolder" Property="Name" Title="Nome" Width="auto">
+                        <FooterTemplate>
+                            <span>Pastas (@amountOfItems)</span>
+                        </FooterTemplate>
+                        <EditTemplate Context="data">
+                            <RadzenTextBox @bind-Value="data.Name" MaxLength="60" Name="BotFolderName" Placeholder="Digite nome da pasta..." Style="width:100%; display: block" />
+                            <RadzenRequiredValidator Text="O nome é obrigatório" Component="BotFolderName" Popup="true" />
+                        </EditTemplate>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="BotFolder" Property="Bots" Title="Quantidade de robôs" Width="auto">
+                        <Template Context="data">
+                            @(data.Bots?.Count ?? 0)
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="BotFolder" Property="ModifiedOn" Title="Última Modificação" Width="auto">
+                        <Template Context="data">
+                            @if (!String.IsNullOrEmpty(data.Name))
+                            {
+                                String.Format("{0:d}", data.ModifiedOn);
+                            }
+                            else
+                            {
+                                @(" - ")
+                            }
+                        </Template>
+                        <FooterTemplate>
+                            <span>Selecionados (@amountSelected)</span>
+                        </FooterTemplate>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="BotFolder" Property="ModifiedBy" Title="Modificado Por" Width="auto">
+                        <Template Context="data">
+                            @if (!String.IsNullOrEmpty(data.ModifiedBy?.FirstName) || !String.IsNullOrEmpty(data.ModifiedBy?.LastName))
+                            {
+                                @(data.ModifiedBy?.FirstName + " " + data.ModifiedBy?.LastName);
+                            }
+                            else
+                            {
+                                @(" - ")
+                            }
+                        </Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="BotFolder" Context="data" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="40px">
+                        <Template Context="data">
+                            <SmartButtonBar>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Size="ButtonSize.Small" Click="@(args => EditFolder(data))" class="ml-1"></RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="delete_forever" Size="ButtonSize.Small" Click="@(args => DeleteFolder(data))" class="ml-1"></RadzenButton>
+                            </SmartButtonBar>
+                        </Template>
+                        <EditTemplate Context="data">
+                            <SmartButtonBar>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="thumb_up_alt" Size="ButtonSize.Small" Click="@((args) => ConfirmFolderCreation(data))" class="ml-1"></RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" Size="ButtonSize.Small" Click="@((args) => CancelEdit(data))" class="ml-1"></RadzenButton>
+                            </SmartButtonBar>
+                        </EditTemplate>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </BSRow>
+        <BSRow Class="position-absolute" style="bottom: 10px">
+            <BSCol Class="px-0">
+                <RadzenButton Click="@((args) => dialogService.Close(true))" Icon="cancel" Text="Fechar" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Style="width:auto" class="px-2" />
+            </BSCol>
+        </BSRow>
+    </BSContainer>
+</div>
+
+@code{
+    List<BotFolder> folders = new List<BotFolder>();
+
+    RadzenGrid<BotFolder> foldersGrid;
+    object multipleValues;
+    int amountOfItems = 0;
+    int amountSelected = 0;
+
+    static DialogOptions dialogOptions = new DialogOptions() { Width = "1000px", Height = "530px", ShowClose = true };
+
+    public static DialogOptions GetDialogOptions() => dialogOptions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllFolders();
+    }
+
+    async Task GetAllFolders()
+    {
+        folders = await http.GetFromJsonAsync<List<BotFolder>>("api/BotFolders");
+    }
+
+    void EditFolder(BotFolder folder)
+    {
+        foldersGrid.EditRow(folder);
+    }
+
+    void OnUpdateFolder(BotFolder folder)
+    {
+        http.PutAsJsonAsync($"api/BotFolders/{folder.BotFolderId}", folder);
+    }
+
+    void CreateFolder()
+    {
+        foldersGrid.InsertRow(new BotFolder());
+    }
+
+    void OnCreateFolder(BotFolder folder)
+    {
+        http.PostAsJsonAsync("api/BotFolders", folder);
+    }
+
+    void ConfirmFolderCreation(BotFolder folder)
+    {
+        foldersGrid.UpdateRow(folder);
+    }
+
+    void CancelEdit(BotFolder folder)
+    {
+        foldersGrid.CancelEditRow(folder);
+    }
+
+    void DeleteFolder(BotFolder folder)
+    {
+        if (folders.Contains(folder))
+        {
+            folders.Remove(folder);
+            http.DeleteAsync($"api/BotFolders/{folder.BotFolderId}");
+            foldersGrid.Reload();
+        }
+        else
+        {
+            foldersGrid.CancelEditRow(folder);
+        }
+    }
+
+    void DeleteManyFolders()
+    {
+
+    }
+
+    void Refresh()
+    {
+        GetAllFolders().ConfigureAwait(true);
+        foldersGrid.Reload();
+    }
+}

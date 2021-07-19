@@ -1,0 +1,34 @@
+@using BlazorStrap
+ 
+<footer class="adx-footer">
+    <BSContainer IsFluid="@IsFluid">
+        <BSNav IsList=true>
+            <BSNavItem>
+                <BSNavLink Href="https://www.adiantex.com">
+                    AdianteX
+                </BSNavLink>
+            </BSNavItem>
+            <BSNavItem>
+                <BSNavLink Href="https://adiantex.com/sobre/">
+                    Sobre
+                </BSNavLink>
+            </BSNavItem>
+            <BSNavItem>
+                <BSNavLink Href="https://adiantex.com/artigos/">
+                    Blog
+                </BSNavLink>
+            </BSNavItem>
+        </BSNav>
+        <div class="adx-copyright">
+            © 2021 made with@(" ")
+            <i class="fas fa-heart" /> by
+            <a href="https:adiantex.com" target="_blank">
+                AdianteX.
+            </a>@(" ")
+        </div>
+    </BSContainer>
+</footer>
+
+@code{
+    [Parameter] public bool IsFluid { get; set; }
+}

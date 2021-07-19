@@ -1,0 +1,27 @@
+﻿@page "/home"
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<BSButton Color="Color.Primary">primary</BSButton>
+<BSButton Color="Color.Secondary">secondary</BSButton>
+<BSButton Color="Color.Success">success</BSButton>
+<BSButton Color="Color.Info">info</BSButton>
+<BSButton Color="Color.Warning">warning</BSButton>
+<BSButton Color="Color.Danger">danger</BSButton>
+<BSButton Color="Color.Light">light</BSButton>
+<BSButton Color="Color.Dark">dark</BSButton>
+<BSButton Color="Color.Link">link</BSButton>
+<RadzenButton Text="Oi"></RadzenButton>
+
+@code {
+    bool IsOpen { get; set; }
+    void onclick(MouseEventArgs e)
+    {
+        IsOpen = !IsOpen;
+        StateHasChanged();
+    }
+}
+
+<SurveyPrompt Title="How is Blazor working for you?" />

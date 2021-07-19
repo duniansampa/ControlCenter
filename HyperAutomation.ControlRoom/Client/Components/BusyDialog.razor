@@ -1,0 +1,16 @@
+﻿@using Radzen
+@using Radzen.Blazor
+
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <img src="images/loading-buffering.gif" width="48px" height="48px" />
+        </div>
+    </div>
+</div>
+
+@code {
+    static DialogOptions dialogOptions = new DialogOptions() { ShowTitle = false, Style = "min-height:auto;min-width:auto;width:auto;" };
+
+    public static DialogOptions GetDialogOptions() => dialogOptions;
+}
