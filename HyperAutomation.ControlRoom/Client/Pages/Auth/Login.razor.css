@@ -60,14 +60,26 @@
 
 ::deep .adx-card-login .card-header .card-title {
     position: relative;
-    color: #ffffff;
+    color: white;
     font-size: 5em;
     font-weight: 900;
-    color: #222a42;
-    /*text-transform: lowercase;*/
     margin-left: -5px;
     line-height: 1.05;
     z-index: 1;
+}
+
+::deep .adx-card-login .card-body .input-group-text {
+    background-color: white;
+}
+
+::deep .adx-card-login .card-body .input-group-text i {
+    opacity: 0.5;
+    font-size: 1rem;
+    width: 17px;
+}
+
+::deep .adx-card-login .card-body input {
+    border-left: none;
 }
 
 h6, .h6 {
