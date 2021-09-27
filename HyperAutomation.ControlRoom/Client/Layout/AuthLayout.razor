@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navigation
 
 <CascadingValue Value="this">
     <div class="adx-page">
@@ -20,17 +21,19 @@
     </div>
 </CascadingValue>
 
-@*<CascadingValue Value="this">
-    <div>
-        <AuthNavbar />
-        <div class="adx-wrapper adx-wrapper-full-page">
-            <div class="adx-full-page">
-                @Body
-                <Footer IsFluid="true" />
-            </div>
-        </div>
-    </div>
-</CascadingValue>*@
+@code {
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthStat { get; set; }
 
-@code{
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        if (!navigation.Uri.StartsWith(navigation.ToAbsoluteUri("/logout").AbsoluteUri)){
+            var user = (await AuthStat).User;
+            if (user.Identity.IsAuthenticated)
+            {
+                navigation.NavigateTo($"{navigation.Uri.GetQueryParm("returnUrl")}");
+            }
+        }
+    }
 }

@@ -246,25 +246,23 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.HasIndex("ModifiedByUserId");
 
                     b.ToTable("UserProfile");
-                });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IdentityRole");
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"),
+                            CreatedOn = new DateTime(2021, 9, 21, 21, 21, 19, 458, DateTimeKind.Local).AddTicks(9893),
+                            Email = "Admin@Admin.com",
+                            FirstName = "Master",
+                            IsActive = true,
+                            IsSuperUser = true,
+                            LastLogin = new DateTime(2021, 9, 21, 21, 21, 19, 460, DateTimeKind.Local).AddTicks(6330),
+                            LastName = "Admin",
+                            ModifiedByUserId = new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"),
+                            ModifiedOn = new DateTime(2021, 9, 21, 21, 21, 19, 460, DateTimeKind.Local).AddTicks(7108),
+                            Password = "",
+                            UserName = "masteradmin"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -293,6 +291,22 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("ff4607f5-96ed-4563-b325-8ef3422df31e"),
+                            ConcurrencyStamp = "70d914ea-0fa1-47b9-8fe5-29512c49ddbd",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = new Guid("6ed2f961-6808-4dd9-866e-41614dec3c04"),
+                            ConcurrencyStamp = "3b6f4251-3f17-49a8-8dac-cfdcdaa1a559",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -382,6 +396,25 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "debc34f4-2961-4e86-8c3e-01ff20ccdb67",
+                            Email = "Admin@Admin.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@ADMIN.COM",
+                            NormalizedUserName = "MASTERADMIN",
+                            PasswordHash = "AQAAAAEAACcQAAAAEG8vscceZIe7IvfyviHaWW4UocnRjM9NjQD7ybdYcdKPDtlvT4tX7B4sn9/wE2f87A==",
+                            PhoneNumber = "00000000000",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "00000000-0000-0000-0000-000000000000",
+                            TwoFactorEnabled = false,
+                            UserName = "masteradmin"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -441,6 +474,13 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"),
+                            RoleId = new Guid("6ed2f961-6808-4dd9-866e-41614dec3c04")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>

@@ -55,6 +55,16 @@
     <Watch Remove="Migrations\20210624001039_second.Designer.cs" />
     <Watch Remove="Migrations\20210624004840_third.cs" />
     <Watch Remove="Migrations\20210624004840_third.Designer.cs" />
+    <Watch Remove="Migrations\20210921111813_fourth.cs" />
+    <Watch Remove="Migrations\20210921111813_fourth.Designer.cs" />
+    <Watch Remove="Migrations\20210921235738_fifth.cs" />
+    <Watch Remove="Migrations\20210921235738_fifth.Designer.cs" />
+    <Watch Remove="Migrations\20210922000111_one.cs" />
+    <Watch Remove="Migrations\20210922000111_one.Designer.cs" />
+    <Watch Remove="Migrations\20210922001524_one.cs" />
+    <Watch Remove="Migrations\20210922001524_one.Designer.cs" />
+    <Watch Remove="Migrations\20210922002120_one.cs" />
+    <Watch Remove="Migrations\20210922002120_one.Designer.cs" />
     <Watch Remove="Utils\HttpContextExtensions.cs" />
     <Watch Remove="Utils\QueryableExtensions.cs" />
   </ItemGroup>

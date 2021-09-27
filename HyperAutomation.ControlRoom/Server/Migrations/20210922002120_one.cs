@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HyperAutomation.ControlRoom.Server.Migrations
 {
-    public partial class initial : Migration
+    public partial class one : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -86,20 +86,6 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityRole",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IdentityRole", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Settings",
                 columns: table => new
                 {
@@ -120,35 +106,6 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Teams", x => x.TeamId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserProfile",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Foto = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsSuperUser = table.Column<bool>(type: "bit", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastLogin = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserProfile", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_UserProfile_UserProfile_ModifiedByUserId",
-                        column: x => x.ModifiedByUserId,
-                        principalTable: "UserProfile",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -255,6 +212,41 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserProfile",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Foto = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsSuperUser = table.Column<bool>(type: "bit", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastLogin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProfile", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_UserProfile_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserProfile_UserProfile_ModifiedByUserId",
+                        column: x => x.ModifiedByUserId,
+                        principalTable: "UserProfile",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -365,6 +357,31 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { new Guid("ff4607f5-96ed-4563-b325-8ef3422df31e"), "70d914ea-0fa1-47b9-8fe5-29512c49ddbd", "User", "USER" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { new Guid("6ed2f961-6808-4dd9-866e-41614dec3c04"), "3b6f4251-3f17-49a8-8dac-cfdcdaa1a559", "Admin", "ADMIN" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"), 0, "debc34f4-2961-4e86-8c3e-01ff20ccdb67", "Admin@Admin.com", true, false, null, "ADMIN@ADMIN.COM", "MASTERADMIN", "AQAAAAEAACcQAAAAEG8vscceZIe7IvfyviHaWW4UocnRjM9NjQD7ybdYcdKPDtlvT4tX7B4sn9/wE2f87A==", "00000000000", true, "00000000-0000-0000-0000-000000000000", false, "masteradmin" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { new Guid("6ed2f961-6808-4dd9-866e-41614dec3c04"), new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a") });
+
+            migrationBuilder.InsertData(
+                table: "UserProfile",
+                columns: new[] { "UserId", "CreatedOn", "Email", "FirstName", "Foto", "IsActive", "IsSuperUser", "LastLogin", "LastName", "ModifiedByUserId", "ModifiedOn", "Password", "UserName" },
+                values: new object[] { new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"), new DateTime(2021, 9, 21, 21, 21, 19, 458, DateTimeKind.Local).AddTicks(9893), "Admin@Admin.com", "Master", null, true, true, new DateTime(2021, 9, 21, 21, 21, 19, 460, DateTimeKind.Local).AddTicks(6330), "Admin", new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"), new DateTime(2021, 9, 21, 21, 21, 19, 460, DateTimeKind.Local).AddTicks(7108), "", "masteradmin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -481,9 +498,6 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                 name: "GlobalValues");
 
             migrationBuilder.DropTable(
-                name: "IdentityRole");
-
-            migrationBuilder.DropTable(
                 name: "Settings");
 
             migrationBuilder.DropTable(
@@ -493,9 +507,6 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "BotFolder");
 
             migrationBuilder.DropTable(
@@ -503,6 +514,9 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserProfile");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

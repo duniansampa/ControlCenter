@@ -26,10 +26,10 @@
     <PackageReference Include="BlazorStrap.Extensions.BSDataTable" Version="1.5.0" />
     <PackageReference Include="BlazorStrap.Extensions.FluentValidation" Version="1.5.0" />
     <PackageReference Include="BlazorStrap.Extensions.TreeView" Version="1.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="5.0.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.5" PrivateAssets="all" />
-    <PackageReference Include="Radzen.Blazor" Version="3.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="5.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.9" PrivateAssets="all" />
+    <PackageReference Include="Radzen.Blazor" Version="3.9.8" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
   </ItemGroup>
 

@@ -16,13 +16,13 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
+        private readonly SignInManager<IdentityUser<Guid>> _signInManager;
         private readonly IConfiguration _configuration;
 
         public AccountController(
-          UserManager<IdentityUser> userManager,
-          SignInManager<IdentityUser> signInManager,
+          UserManager<IdentityUser<Guid>> userManager,
+          SignInManager<IdentityUser<Guid>> signInManager,
           IConfiguration configuration)
         {
             _userManager = userManager;
@@ -40,7 +40,7 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<UserToken>> Register([FromBody] UserProfile model)
         {
-            var user = new IdentityUser
+            var user = new IdentityUser<Guid>
             {
                 UserName = model.Email,
                 Email = model.Email
@@ -58,6 +58,7 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
                 {
                     await _userManager.AddToRoleAsync(user, "Admin");
                 }
+
                 return await GenerateTokenAsync(model);
             }
             else
@@ -68,14 +69,34 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
 
 
         [HttpPost("Login")]
-        public async Task<ActionResult<UserToken>> Login([FromBody] UserProfile userInfo)
+        public async Task<ActionResult<UserToken>> Login([FromBody] LoginModel loginModel)
         {
-            var result = await _signInManager.PasswordSignInAsync(userInfo.Email,
-               userInfo.Password, isPersistent: false, lockoutOnFailure: false);
+            var userProfile = new UserProfile
+            {
+                Password = loginModel.Password
+            };
+
+            if (this.IsEmail(loginModel.Login))
+            {
+                userProfile.Email = loginModel.Login;
+                var user = await _userManager.FindByEmailAsync(loginModel.Login);
+                if (user is not null)
+                    userProfile.UserName = user.UserName;
+            }else
+            {
+                userProfile.UserName = loginModel.Login;
+                var user = await _userManager.FindByNameAsync(loginModel.Login);
+                if (user is not null)
+                    userProfile.Email = user.Email;
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(userProfile.UserName,
+               loginModel.Password, isPersistent: false, lockoutOnFailure: false);
+
 
             if (result.Succeeded)
             {
-                return await GenerateTokenAsync(userInfo);
+                return await GenerateTokenAsync(userProfile);
             }
             else
             {
@@ -96,7 +117,8 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
             var user = await _signInManager.UserManager.FindByEmailAsync(userInfo.Email);
             var roles = await _signInManager.UserManager.GetRolesAsync(user);
             var claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Name, userInfo.Email));
+            claims.Add(new Claim(ClaimTypes.Name, userInfo.UserName));
+            claims.Add(new Claim(ClaimTypes.Email, userInfo.Email));
 
             foreach (var role in roles)
             {
@@ -123,6 +145,19 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
                 Expiration = expiration,
                 Message = message
             };
+        }
+
+        private bool IsEmail(string login)
+        {
+            try
+            {
+                new System.Net.Mail.MailAddress(login);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
     }
 }

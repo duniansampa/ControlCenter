@@ -8,7 +8,7 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
     public static class StringExtension
     {
         public static string Remove(
-            this string input, 
+            this string input,
             string strToRemove)
         {
             if (input.IsNullOrEmpty())
@@ -20,7 +20,7 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
         }
 
         public static string Left(
-            this string input, 
+            this string input,
             int minusRight = 1)
         {
             if (input.IsNullOrEmpty() || input.Length <= minusRight)
@@ -44,7 +44,7 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
         }
 
         public static CultureInfo ToCultureInfo(
-            this string culture, 
+            this string culture,
             CultureInfo defaultCulture)
         {
             return culture.IsNullOrEmpty() ? new CultureInfo(culture) : defaultCulture;
@@ -62,7 +62,7 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
         }
 
         public static double? ToDouble(
-            this string value, 
+            this string value,
             string culture = "en-US")
         {
             try
@@ -120,7 +120,7 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
         }
 
         public static Guid ToGuid(
-            this string value, 
+            this string value,
             Guid defaultValue)
         {
             if (Guid.TryParse(value, out Guid valor))
@@ -132,8 +132,8 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
         }
 
         public static string AddQueyString(
-            this string url, 
-            string queryStringKey, 
+            this string url,
+            string queryStringKey,
             string queryStringValue)
         {
             var segments = url.Split('?');
@@ -150,15 +150,30 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
             return url + queryString + queryStringKey + "=" + queryStringValue;
         }
 
+        public static string AddQueryParm(this string uri, string parmName, string parmValue)
+        {
+            var uriBuilder = new UriBuilder(uri);
+            var q = System.Web.HttpUtility.ParseQueryString(new Uri(uri).Query);
+            q[parmName] = parmValue;
+            uriBuilder.Query = q.ToString();
+            var newUrl = uriBuilder.ToString();
+            return newUrl;
+        }
+
+        public static string GetQueryParm(this string uri, string parmName)
+        {
+            return System.Web.HttpUtility.ParseQueryString(new Uri(uri).Query).Get(parmName) ?? "";
+        }
+
         public static string FormatFirstLetterUpperCase(
-            this string value, 
+            this string value,
             string culture = "en-US")
         {
             return CultureInfo.GetCultureInfo(culture).TextInfo.ToTitleCase(value);
         }
 
         public static string FillLeftWithZeros(
-            this string value, 
+            this string value,
             int decimalDigits)
         {
             if (!string.IsNullOrEmpty(value))
@@ -178,9 +193,9 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
         }
 
         public static string FormatWithDecimalDigits(
-            this string value, 
-            bool removeCurrencySymbol, 
-            bool returnZero, 
+            this string value,
+            bool removeCurrencySymbol,
+            bool returnZero,
             int? decimalDigits)
         {
             if (value.IsNullOrEmpty()) return value;
@@ -198,9 +213,9 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
         }
 
         public static string FormatWithoutDecimalDigits(
-            this string value, bool removeCurrencySymbol, 
-            bool returnZero, 
-            int? decimalDigits, 
+            this string value, bool removeCurrencySymbol,
+            bool returnZero,
+            int? decimalDigits,
             CultureInfo culture)
         {
             if (removeCurrencySymbol)

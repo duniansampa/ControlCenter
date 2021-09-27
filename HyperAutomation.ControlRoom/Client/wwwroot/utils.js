@@ -6,5 +6,5 @@ function perfectScrollbarCreate(selector) {
 }
 function perfectScrollbarDestroy(selector) {
     if (psDict[selector] != undefined)
-        ps.destroy();
+        psDict[selector].destroy();
 }

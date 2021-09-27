@@ -9,6 +9,17 @@ using System.Threading.Tasks;
 
 namespace HyperAutomation.ControlRoom.Server.Models
 {
+    static class AdminUserData
+    {
+        public static Guid AdminRoleId { get; } = Guid.NewGuid();
+        public static Guid AdminUserId { get; } = Guid.NewGuid();
+        public static string UserName { get; set; } = "masteradmin";
+        public static string Email { get; set; } = "Admin@Admin.com";
+        public static string FirstName { get; set; } = "Master";
+        public static string LastName { get; set; } = "Admin";
+        public static string PasswordHash { get; set; } = new PasswordHasher<IdentityUser<Guid>>().HashPassword(null, "masteradmin");
+    }
+
     public class BotEntityTypeConfiguration : IEntityTypeConfiguration<Bot>
     {
         public void Configure(EntityTypeBuilder<Bot> builder)
@@ -159,26 +170,82 @@ namespace HyperAutomation.ControlRoom.Server.Models
         }
     }
 
-    public class IdentityRoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+    public class IdentityRoleConfiguration : IEntityTypeConfiguration<IdentityRole<Guid>>
     {
-        public void Configure(EntityTypeBuilder<IdentityRole> builder)
+        public void Configure(EntityTypeBuilder<IdentityRole<Guid>> builder)
         {
-            //builder.HasData(new IdentityRole
-            //{
-            //    Name = "User",
-            //    NormalizedName = "USER",
-            //    Id = Guid.NewGuid().ToString(),
-            //    ConcurrencyStamp = Guid.NewGuid().ToString()
-            //});
+            builder.HasData(new IdentityRole<Guid>
+            {
+                Name = "User",
+                NormalizedName = "USER",
+                Id = Guid.NewGuid(),
+                ConcurrencyStamp = Guid.NewGuid().ToString()
+            });
 
+            builder.HasData(new IdentityRole<Guid>
+            {
+                Name = "Admin",
+                NormalizedName = "ADMIN",
+                Id = AdminUserData.AdminRoleId,
+                ConcurrencyStamp = Guid.NewGuid().ToString()
+            });
+        }
+    }
 
-            //builder.HasData(new IdentityRole
-            //{
-            //    Name = "Admin",
-            //    NormalizedName = "ADMIN",
-            //    Id = Guid.NewGuid().ToString(),
-            //    ConcurrencyStamp = Guid.NewGuid().ToString()
-            //});
+    public class IdentityUserConfiguration : IEntityTypeConfiguration<IdentityUser<Guid>>
+    {
+        public void Configure(EntityTypeBuilder<IdentityUser<Guid>> builder)
+        {
+            builder.HasData(new IdentityUser<Guid>
+            {
+                Id = AdminUserData.AdminUserId,
+                UserName = AdminUserData.UserName,
+                NormalizedUserName = AdminUserData.UserName.ToUpper(),
+                Email = AdminUserData.Email,
+                NormalizedEmail = AdminUserData.Email.ToUpper(),
+                PhoneNumber = "00000000000",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                PasswordHash = AdminUserData.PasswordHash,
+                SecurityStamp = new Guid().ToString(),
+            });
+        }
+    }
+
+    public class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<Guid>>
+    {
+        public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder)
+        {
+            builder.HasData(new IdentityUserRole<Guid>
+            {
+                RoleId = AdminUserData.AdminRoleId,
+                UserId = AdminUserData.AdminUserId
+            });
+        }
+    }
+
+    public class IdentityUserProfileConfig : IEntityTypeConfiguration<UserProfile>
+    {
+        public void Configure(EntityTypeBuilder<UserProfile> builder)
+        {
+            builder.HasData(new UserProfile
+            {
+                UserId = AdminUserData.AdminUserId,
+                UserName = AdminUserData.UserName,
+                Email = AdminUserData.Email,
+                Password = string.Empty,
+                FirstName = AdminUserData.FirstName,
+                LastName = AdminUserData.LastName,
+                Foto = null,
+                IsSuperUser = true,
+                IsActive = true,
+                CreatedOn = DateTime.Now,
+                LastLogin = DateTime.Now,
+                ModifiedOn = DateTime.Now,
+                ModifiedByUserId = AdminUserData.AdminUserId,
+                //ModifiedBy = this
+            });
         }
     }
 }
+  

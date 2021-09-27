@@ -32,9 +32,12 @@ namespace HyperAutomation.ControlRoom.Server.Models
 
             modelBuilder.ApplyConfiguration(new BotEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new IdentityRoleConfiguration());
+            modelBuilder.ApplyConfiguration(new IdentityUserConfiguration());
+            modelBuilder.ApplyConfiguration(new IdentityUserRoleConfig());
+            modelBuilder.ApplyConfiguration(new IdentityUserProfileConfig());
 
-           //Shadow Property
-           var allEntities = modelBuilder.Model.GetEntityTypes();       
+            //Shadow Property
+            var allEntities = modelBuilder.Model.GetEntityTypes();       
 
             foreach (var entity in allEntities)
             {
