@@ -1,7 +1,9 @@
 ﻿@inherits LayoutComponentBase
 @using HyperAutomation.ControlRoom.Shared
+@using System.Security.Claims
 @inject NavigationManager navigation
 @inject IJSRuntime js
+@inject HttpClient http
 
 <AuthorizeView>
     <Authorized>
@@ -48,6 +50,7 @@
 
     private bool SidebarMini = false;
     private bool DarkMode = false;
+    public static UserProfile UserProfile { get; private set; } = null;
 
     private string SideBarColor = "blue";
 
@@ -77,9 +80,11 @@
 
     private void ToggleMode() => DarkMode = !DarkMode;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
+        if (UserProfile is null)
+            UserProfile = await GetUserProfile();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -87,5 +92,16 @@
         var user = (await AuthStat).User;
         if (firstRender && user.Identity.IsAuthenticated)
             await js.InvokeVoidAsync("perfectScrollbarCreate", ".adx-main-panel");
+    }
+
+    public async Task<UserProfile> GetUserProfile(bool updated = false)
+    {
+        var user = (await AuthStat).User;
+        if ((UserProfile is null || updated) && user.Identity.IsAuthenticated)
+        {
+            var id = user.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).First().Value;
+            UserProfile = await http.GetFromJsonAsync<UserProfile>($"api/UserProfiles/{id}");
+        }
+        return UserProfile;
     }
 }

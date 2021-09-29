@@ -25,7 +25,7 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BotFolder>>> GetBotFolder()
         {
-            return await _context.BotFolder.ToListAsync();
+            return await _context.BotFolder.Include(b => b.ModifiedBy).ToListAsync();
         }
 
         // GET: api/BotFolders/5

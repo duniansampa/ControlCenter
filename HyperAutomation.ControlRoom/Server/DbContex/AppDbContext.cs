@@ -76,12 +76,12 @@ namespace HyperAutomation.ControlRoom.Server.Models
         }
 
         public DbSet<Bot> Bots { get; set; }
-        DbSet<Credential> Credentials { get; set; }
-        DbSet<Device> Devices { get; set; }
-        DbSet<GlobalValue> GlobalValues { get; set; }
-        DbSet<Setting> Settings { get; set; }
-        DbSet<Team> Teams { get; set; }
-        DbSet<UserProfile> UserProfile { get; set; }
+        public DbSet<Credential> Credentials { get; set; }
+        public DbSet<Device> Devices { get; set; }
+        public DbSet<GlobalValue> GlobalValues { get; set; }
+        public DbSet<Setting> Settings { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<UserProfile> UserProfile { get; set; }
         public DbSet<BotFolder> BotFolder { get; set; }
     }
 }

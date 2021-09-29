@@ -119,6 +119,7 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name, userInfo.UserName));
             claims.Add(new Claim(ClaimTypes.Email, userInfo.Email));
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
 
             foreach (var role in roles)
             {

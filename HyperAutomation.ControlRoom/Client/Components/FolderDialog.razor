@@ -15,7 +15,7 @@
                     <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="refresh" Size="ButtonSize.Small" Click="@(args => Refresh())" class="ml-2"></RadzenButton>
                 </BSButtonGroup>
             </BSCol>
-        </BSRow> 
+        </BSRow>
         <BSRow>
             <RadzenGrid @ref="foldersGrid" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                         FilterMode="FilterMode.Simple" AllowPaging="true" PageSize="5"
@@ -48,14 +48,7 @@
                     </RadzenGridColumn>
                     <RadzenGridColumn TItem="BotFolder" Property="ModifiedOn" Title="Última Modificação" Width="auto">
                         <Template Context="data">
-                            @if (!String.IsNullOrEmpty(data.Name))
-                            {
-                                String.Format("{0:d}", data.ModifiedOn);
-                            }
-                            else
-                            {
-                                @(" - ")
-                            }
+                            @String.Format("{0:d}", data.ModifiedOn)
                         </Template>
                         <FooterTemplate>
                             <span>Selecionados (@amountSelected)</span>
@@ -99,6 +92,13 @@
 </div>
 
 @code{
+
+    [CascadingParameter]
+    protected MainLayout MainLayout { get; set; }
+
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthStat { get; set; }
+
     List<BotFolder> folders = new List<BotFolder>();
 
     RadzenGrid<BotFolder> foldersGrid;
@@ -127,12 +127,20 @@
 
     void OnUpdateFolder(BotFolder folder)
     {
+        folder.ModifiedOn = DateTime.Now;
+        folder.ModifiedByUserId = MainLayout.UserProfile.UserId;
         http.PutAsJsonAsync($"api/BotFolders/{folder.BotFolderId}", folder);
     }
 
-    void CreateFolder()
+    async void CreateFolder()
     {
-        foldersGrid.InsertRow(new BotFolder());
+        await foldersGrid.InsertRow(new BotFolder
+        {
+            CreatedByUserId = MainLayout.UserProfile.UserId,
+            CreatedOn = DateTime.Now,
+            ModifiedByUserId = MainLayout.UserProfile.UserId,
+            ModifiedOn = DateTime.Now
+        });
     }
 
     void OnCreateFolder(BotFolder folder)
