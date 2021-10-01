@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyperAutomation.ControlRoom.Shared.Recursos
+namespace HyperAutomation.ControlRoom.Shared.Utils
 {
     public class Paginacao
     {

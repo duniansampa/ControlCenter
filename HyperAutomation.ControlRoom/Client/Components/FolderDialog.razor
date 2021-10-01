@@ -34,7 +34,7 @@
                     </RadzenGridColumn>
                     <RadzenGridColumn TItem="BotFolder" Property="Name" Title="Nome" Width="auto">
                         <FooterTemplate>
-                            <span>Pastas (@amountOfItems)</span>
+                            <span>Pastas (@folders.Count)</span>
                         </FooterTemplate>
                         <EditTemplate Context="data">
                             <RadzenTextBox @bind-Value="data.Name" MaxLength="60" Name="BotFolderName" Placeholder="Digite nome da pasta..." Style="width:100%; display: block" />
@@ -48,7 +48,14 @@
                     </RadzenGridColumn>
                     <RadzenGridColumn TItem="BotFolder" Property="ModifiedOn" Title="Última Modificação" Width="auto">
                         <Template Context="data">
-                            @String.Format("{0:d}", data.ModifiedOn)
+                            @if (data.ModifiedOn is not null)
+                            {
+                                @String.Format("{0:d}", data.ModifiedOn)
+                            }
+                            else
+                            {
+                                @(" - ")
+                            }
                         </Template>
                         <FooterTemplate>
                             <span>Selecionados (@amountSelected)</span>
@@ -75,7 +82,7 @@
                         </Template>
                         <EditTemplate Context="data">
                             <SmartButtonBar>
-                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="thumb_up_alt" Size="ButtonSize.Small" Click="@((args) => ConfirmFolderCreation(data))" class="ml-1"></RadzenButton>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="thumb_up_alt" Size="ButtonSize.Small" Click="@((args) => ConfirmFolderCreationOrUpdate(data))" class="ml-1"></RadzenButton>
                                 <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" Size="ButtonSize.Small" Click="@((args) => CancelEdit(data))" class="ml-1"></RadzenButton>
                             </SmartButtonBar>
                         </EditTemplate>
@@ -103,8 +110,8 @@
 
     RadzenGrid<BotFolder> foldersGrid;
     object multipleValues;
-    int amountOfItems = 0;
-    int amountSelected = 0;
+    int amountSelected => multipleValues == null ? 0 : (multipleValues as IEnumerable<BotFolder>).Count<BotFolder>();
+
 
     static DialogOptions dialogOptions = new DialogOptions() { Width = "1000px", Height = "530px", ShowClose = true };
 
@@ -125,32 +132,72 @@
         foldersGrid.EditRow(folder);
     }
 
-    void OnUpdateFolder(BotFolder folder)
+    void ConfirmFolderCreationOrUpdate(BotFolder folder)
     {
-        folder.ModifiedOn = DateTime.Now;
-        folder.ModifiedByUserId = MainLayout.UserProfile.UserId;
-        http.PutAsJsonAsync($"api/BotFolders/{folder.BotFolderId}", folder);
+        if (folder.BotFolderId == Guid.Empty)
+        {
+            ConfirmFolderCreation(folder);
+        }
+        else
+        {
+            ConfirmFolderUpdate(folder);
+        }
     }
 
-    async void CreateFolder()
+    async void ConfirmFolderUpdate(BotFolder folder)
     {
-        await foldersGrid.InsertRow(new BotFolder
+        BotFolder fcopied = folder.CreateShallowCopy();
+        folder.ModifiedByUserId = MainLayout.UserProfile.UserId;
+        folder.ModifiedBy = MainLayout.UserProfile;
+        fcopied.SetUsersToNull();
+        var response = await http.PutAsJsonAsync($"api/BotFolders/{fcopied.BotFolderId}", fcopied);
+        if (response.IsSuccessStatusCode)
         {
-            CreatedByUserId = MainLayout.UserProfile.UserId,
-            CreatedOn = DateTime.Now,
-            ModifiedByUserId = MainLayout.UserProfile.UserId,
-            ModifiedOn = DateTime.Now
-        });
+            await foldersGrid.UpdateRow(folder);
+        }
+        else
+        {
+            foldersGrid.CancelEditRow(folder);
+            Console.WriteLine($"Houve erro ao atualizar BotFolder \"{folder.BotFolderId}\"");
+        }
+    }
+
+    void OnUpdateFolder(BotFolder folder)
+    {
+        Console.WriteLine($"BotFolder \"{folder.BotFolderId}\" atualizado com sucesso.");
+    }
+
+    void CreateFolder()
+    {
+        foldersGrid.InsertRow(new BotFolder { });
     }
 
     void OnCreateFolder(BotFolder folder)
     {
-        http.PostAsJsonAsync("api/BotFolders", folder);
+        Console.WriteLine($"BotFolder \"{folder.BotFolderId}\" criado com sucesso");
     }
 
-    void ConfirmFolderCreation(BotFolder folder)
+    async void ConfirmFolderCreation(BotFolder folder)
     {
-        foldersGrid.UpdateRow(folder);
+
+        folder.CreatedByUserId = folder.ModifiedByUserId = MainLayout.UserProfile.UserId;
+
+        var response = await http.PostAsJsonAsync("api/BotFolders", folder);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var f = await response.ReadAsync<BotFolder>();
+            folder.CreatedBy = folder.ModifiedBy = MainLayout.UserProfile;
+            folder.CreatedOn = f.CreatedOn;
+            folder.ModifiedOn = f.ModifiedOn;
+            await foldersGrid.UpdateRow(folder);
+        }
+        else
+        {
+            folders.Remove(folder);
+            await foldersGrid.Reload();
+            Console.WriteLine($"Houve erro ao criar BotFolder \"{folder.BotFolderId}\"");
+        }
     }
 
     void CancelEdit(BotFolder folder)
@@ -158,13 +205,16 @@
         foldersGrid.CancelEditRow(folder);
     }
 
-    void DeleteFolder(BotFolder folder)
+    async void DeleteFolder(BotFolder folder)
     {
         if (folders.Contains(folder))
         {
-            folders.Remove(folder);
-            http.DeleteAsync($"api/BotFolders/{folder.BotFolderId}");
-            foldersGrid.Reload();
+            var response = await http.DeleteAsync($"api/BotFolders/{folder.BotFolderId}");
+            if (response.IsSuccessStatusCode)
+            {
+                folders.Remove(folder);
+                await foldersGrid.Reload();
+            }
         }
         else
         {
@@ -174,12 +224,19 @@
 
     void DeleteManyFolders()
     {
-
+        if (amountSelected > 0)
+        {
+            var selectedFolders = multipleValues as IEnumerable<BotFolder>;
+            foreach (var folder in selectedFolders)
+            {
+                DeleteFolder(folder);
+            }
+        }
     }
 
-    void Refresh()
+    async void Refresh()
     {
-        GetAllFolders().ConfigureAwait(true);
-        foldersGrid.Reload();
+        await GetAllFolders();
+        await foldersGrid.Reload();
     }
 }

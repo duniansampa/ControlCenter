@@ -4,14 +4,16 @@ using HyperAutomation.ControlRoom.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HyperAutomation.ControlRoom.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210929183834_one")]
+    partial class one
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,13 +30,13 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("CreatedOn")
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("DeletedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DeletedOn")
+                    b.Property<DateTime>("DeletedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -46,7 +48,7 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.Property<Guid?>("ModifiedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("ModifiedOn")
+                    b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -86,19 +88,19 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("CreatedOn")
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("DeletedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DeletedOn")
+                    b.Property<DateTime>("DeletedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("ModifiedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("ModifiedOn")
+                    b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -201,7 +203,7 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("CreatedOn")
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
@@ -220,7 +222,7 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.Property<bool>("IsSuperUser")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastLogin")
+                    b.Property<DateTime>("LastLogin")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
@@ -229,7 +231,7 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.Property<Guid?>("ModifiedByUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("ModifiedOn")
+                    b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Password")
@@ -250,12 +252,15 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("30e7d1dd-7ac6-4117-807c-20ef2052dda2"),
+                            UserId = new Guid("ca8be584-3b35-4e68-a590-5ca460c93431"),
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "Admin@Admin.com",
                             FirstName = "Master",
                             IsActive = true,
                             IsSuperUser = true,
+                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Admin",
+                            ModifiedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "",
                             UserName = "masteradmin"
                         });
@@ -291,15 +296,15 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("74058a2f-6897-47e0-b2d6-8452081ecd44"),
-                            ConcurrencyStamp = "494c8277-a8f0-4344-9cf5-b87045296211",
+                            Id = new Guid("8ad3968e-438d-4a2d-bf47-98bd20cd7f61"),
+                            ConcurrencyStamp = "0c9aae60-b22f-4b96-a467-71596c2e3d5e",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("08168169-0795-4d45-9ef5-0eb13f1592cb"),
-                            ConcurrencyStamp = "f85a6563-ae7a-49b7-bc76-4e04c38c74ae",
+                            Id = new Guid("faf58bbc-d402-42f2-94c0-f811c358892a"),
+                            ConcurrencyStamp = "79bdfebf-816b-455f-a163-97fe6418ebad",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -396,15 +401,15 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("30e7d1dd-7ac6-4117-807c-20ef2052dda2"),
+                            Id = new Guid("ca8be584-3b35-4e68-a590-5ca460c93431"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7cacdc44-d3f2-4b9e-b5ca-389189ebb49b",
+                            ConcurrencyStamp = "b63295bd-ff0e-4047-a9ae-d33dd424fea3",
                             Email = "Admin@Admin.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "MASTERADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIJgPC6tk8+HCqO3NYxHiZzfqR00qQHCsFoc65JtWLfe/1NGO5j4Ee+ITImj97V6Zg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJ2aU+08AyDzW73jiOsME12GKxaqJqzgGQlRZI1eOMOm0cPNd2ibyg0cH/1lHlzARA==",
                             PhoneNumber = "00000000000",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "00000000-0000-0000-0000-000000000000",
@@ -474,8 +479,8 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("30e7d1dd-7ac6-4117-807c-20ef2052dda2"),
-                            RoleId = new Guid("08168169-0795-4d45-9ef5-0eb13f1592cb")
+                            UserId = new Guid("ca8be584-3b35-4e68-a590-5ca460c93431"),
+                            RoleId = new Guid("faf58bbc-d402-42f2-94c0-f811c358892a")
                         });
                 });
 

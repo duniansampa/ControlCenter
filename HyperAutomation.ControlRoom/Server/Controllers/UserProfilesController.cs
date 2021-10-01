@@ -39,8 +39,6 @@ namespace HyperAutomation.ControlRoom.Server.Controllers
                 return NotFound();
             }
 
-            userProfile.ModifiedBy = null;
-
             return userProfile;
         }
 

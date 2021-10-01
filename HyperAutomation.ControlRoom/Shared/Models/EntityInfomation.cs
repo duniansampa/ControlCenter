@@ -9,9 +9,9 @@ namespace HyperAutomation.ControlRoom.Shared.Models
     public class EntityInfomation
     {
         public State State { get; set; } = State.DRAFT;
-        public DateTime CreatedOn { get; set; }
-        public DateTime ModifiedOn { get; set; }
-        public DateTime DeletedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
+        public DateTime? DeletedOn { get; set; }
 
         // Relations
         public Guid? CreatedByUserId { get; set; }

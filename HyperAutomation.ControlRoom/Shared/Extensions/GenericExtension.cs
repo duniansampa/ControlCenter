@@ -1,5 +1,6 @@
 ﻿using HyperAutomation.ControlRoom.Shared.Models;
 using HyperAutomation.ControlRoom.Shared.Models;
+using System.Net.Http;
 
 namespace HyperAutomation.ControlRoom.Shared.Extensions
 {
@@ -19,6 +20,23 @@ namespace HyperAutomation.ControlRoom.Shared.Extensions
             result.Success = true;
 
             return result;
+        }
+
+        public static void SetUsersToNull<T>(this T obj) where T : EntityInfomation
+        {
+            obj.CreatedBy = null;
+            obj.ModifiedBy = null;
+            obj.DeletedBy = null;
+        }
+
+        public static void SetUsersToNull(this UserProfile obj)
+        {
+            obj.ModifiedBy = null;
+        }
+
+        public static string GetResponseErrorMessage<T>(this T response) where T: HttpResponseMessage
+        {
+            return response.Content.ReadAsStringAsync().Result;
         }
     }
 }

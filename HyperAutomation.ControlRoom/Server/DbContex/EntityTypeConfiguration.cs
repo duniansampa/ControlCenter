@@ -239,10 +239,10 @@ namespace HyperAutomation.ControlRoom.Server.Models
                 Foto = null,
                 IsSuperUser = true,
                 IsActive = true,
-                CreatedOn = DateTime.Now,
-                LastLogin = DateTime.Now,
-                ModifiedOn = DateTime.Now,
-                ModifiedByUserId = AdminUserData.AdminUserId,
+                //CreatedOn = DateTime.Now,
+                //LastLogin = DateTime.Now,
+                //ModifiedOn = DateTime.Now,
+                //ModifiedByUserId = AdminUserData.AdminUserId,
                 //ModifiedBy = this
             });
         }

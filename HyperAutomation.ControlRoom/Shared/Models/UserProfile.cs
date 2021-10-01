@@ -1,11 +1,12 @@
-﻿using System;
+﻿using HyperAutomation.ControlRoom.Shared.Utils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HyperAutomation.ControlRoom.Shared.Models
 {
-    public class UserProfile
+    public class UserProfile: ICustomClone<BotFolder>
     {
         [Key]
         public Guid UserId { get; set; }
@@ -32,16 +33,21 @@ namespace HyperAutomation.ControlRoom.Shared.Models
 
         public bool IsActive { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
 
-        public DateTime LastLogin { get; set; }
+        public DateTime? LastLogin { get; set; }
 
-        public DateTime ModifiedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
 
         // Relations
         public Guid? ModifiedByUserId { get; set; }
         public virtual UserProfile ModifiedBy { get; set; }
 
         public virtual ICollection<Team> Teams { get; set; }
+
+        public BotFolder CreateShallowCopy()
+        {
+            return (BotFolder)this.MemberwiseClone();
+        }
     }
 }

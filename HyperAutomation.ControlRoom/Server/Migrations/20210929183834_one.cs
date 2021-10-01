@@ -361,27 +361,27 @@ namespace HyperAutomation.ControlRoom.Server.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("ff4607f5-96ed-4563-b325-8ef3422df31e"), "70d914ea-0fa1-47b9-8fe5-29512c49ddbd", "User", "USER" });
+                values: new object[] { new Guid("8ad3968e-438d-4a2d-bf47-98bd20cd7f61"), "0c9aae60-b22f-4b96-a467-71596c2e3d5e", "User", "USER" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("6ed2f961-6808-4dd9-866e-41614dec3c04"), "3b6f4251-3f17-49a8-8dac-cfdcdaa1a559", "Admin", "ADMIN" });
+                values: new object[] { new Guid("faf58bbc-d402-42f2-94c0-f811c358892a"), "79bdfebf-816b-455f-a163-97fe6418ebad", "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"), 0, "debc34f4-2961-4e86-8c3e-01ff20ccdb67", "Admin@Admin.com", true, false, null, "ADMIN@ADMIN.COM", "MASTERADMIN", "AQAAAAEAACcQAAAAEG8vscceZIe7IvfyviHaWW4UocnRjM9NjQD7ybdYcdKPDtlvT4tX7B4sn9/wE2f87A==", "00000000000", true, "00000000-0000-0000-0000-000000000000", false, "masteradmin" });
+                values: new object[] { new Guid("ca8be584-3b35-4e68-a590-5ca460c93431"), 0, "b63295bd-ff0e-4047-a9ae-d33dd424fea3", "Admin@Admin.com", true, false, null, "ADMIN@ADMIN.COM", "MASTERADMIN", "AQAAAAEAACcQAAAAEJ2aU+08AyDzW73jiOsME12GKxaqJqzgGQlRZI1eOMOm0cPNd2ibyg0cH/1lHlzARA==", "00000000000", true, "00000000-0000-0000-0000-000000000000", false, "masteradmin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { new Guid("6ed2f961-6808-4dd9-866e-41614dec3c04"), new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a") });
+                values: new object[] { new Guid("faf58bbc-d402-42f2-94c0-f811c358892a"), new Guid("ca8be584-3b35-4e68-a590-5ca460c93431") });
 
             migrationBuilder.InsertData(
                 table: "UserProfile",
                 columns: new[] { "UserId", "CreatedOn", "Email", "FirstName", "Foto", "IsActive", "IsSuperUser", "LastLogin", "LastName", "ModifiedByUserId", "ModifiedOn", "Password", "UserName" },
-                values: new object[] { new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"), new DateTime(2021, 9, 21, 21, 21, 19, 458, DateTimeKind.Local).AddTicks(9893), "Admin@Admin.com", "Master", null, true, true, new DateTime(2021, 9, 21, 21, 21, 19, 460, DateTimeKind.Local).AddTicks(6330), "Admin", new Guid("d063fd13-5353-4bb0-8b20-d4b7b5cd773a"), new DateTime(2021, 9, 21, 21, 21, 19, 460, DateTimeKind.Local).AddTicks(7108), "", "masteradmin" });
+                values: new object[] { new Guid("ca8be584-3b35-4e68-a590-5ca460c93431"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin@Admin.com", "Master", null, true, true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "masteradmin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
