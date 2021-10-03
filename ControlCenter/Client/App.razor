@@ -1,0 +1,25 @@
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>
+                    <BlazorStrap.BSAlert>
+                        <h1>Autorizando o usuário...</h1>
+                    </BlazorStrap.BSAlert>
+                </Authorizing>
+                <NotAuthorized>
+                    <h2>Usuário não Autorizado...</h2>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <CascadingAuthenticationState>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p role="alert">Não foi localizado um componente para esta rota.</p>
+                </LayoutView>
+            </CascadingAuthenticationState>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

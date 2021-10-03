@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager navigation
+
+<CascadingValue Value="this">
+    <div class="adx-page">
+        <div class="adx-main-panel adx-background">
+            <BSNavbar IsExpand="true" HideLight="true">
+                <div class="container-fluid">
+                    <div class="adx-navbar-toggle-area">
+                        <BSImage src="images/logo_adiantex.jpeg" />
+                        <span class="adx-navbar-text">Control Center</span>
+                    </div>
+                </div>
+            </BSNavbar>
+
+            <div class="adx-content">
+                @Body
+            </div>
+            <AuthFooter></AuthFooter>
+        </div>
+    </div>
+</CascadingValue>
+
+@code {
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthStat { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        if (!navigation.Uri.StartsWith(navigation.ToAbsoluteUri("/logout").AbsoluteUri)){
+            var user = (await AuthStat).User;
+            if (user.Identity.IsAuthenticated)
+            {
+                navigation.NavigateTo($"{navigation.Uri.GetQueryParmValue("returnUrl")}");
+            }
+        }
+    }
+}
